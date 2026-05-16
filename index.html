@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Операция «Багратион» — Белорусская стратегическая операция 1944 года. Исторический образовательный проект.">
+    <title>Операция «Багратион» | Исторический проект</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E6C97A;
+            --gold-dark: #A67C2B;
+            --gold-glow: rgba(201, 168, 76, 0.4);
+            --dark: #1a1a1a;
+            --dark-secondary: #2a2a2a;
+            --olive: #4A5C3A;
+            --red: #8B1A1A;
+            --cream: #f8f6f0;
+            --text-primary: #333;
+            --text-secondary: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background: #fff;
+            line-height: 1.6;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: rgba(26, 26, 26, 0.98) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--gold);
+            transition: all 0.4s ease;
+            padding: 15px 0;
+            z-index: 1030;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .navbar.scrolled { padding: 8px 0; background: rgba(26, 26, 26, 0.99) !important; }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold) !important;
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--gold-glow);
+            transition: transform 0.3s;
+        }
+        .navbar-brand:hover { transform: scale(1.05); }
+        .nav-link {
+            color: #ddd !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin: 0 5px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 8px 12px !important;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold) !important;
+            text-shadow: 0 0 8px var(--gold-glow);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: var(--gold);
+            transition: transform 0.3s ease;
+            transform-origin: center;
+        }
+        .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
+        .navbar-toggler { border: 2px solid var(--gold) !important; }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(201,168,76,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, rgba(26,26,26,0.9) 0%, rgba(74,92,58,0.8) 50%, rgba(26,26,26,0.9) 100%),
+                url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bundesarchiv_Bild_146-1978-024-31A%2C_Minsk%2C_wiedereroberte_Stadt.jpg/1920px-Bundesarchiv_Bild_146-1978-024-31A%2C_Minsk%2C_wiedereroberte_Stadt.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            padding-top: 80px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(26,26,26,0.4) 100%);
+            pointer-events: none;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(transparent, var(--cream));
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            animation: fadeInUp 1s ease;
+            line-height: 1.1;
+            background: linear-gradient(45deg, #fff, var(--gold-light), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 300;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 20px 0 10px;
+            animation: fadeInUp 1s ease 0.2s both;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero .dates {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 15px 0 25px;
+            font-weight: 600;
+            animation: fadeInUp 1s ease 0.4s both;
+            color: rgba(255,255,255,0.95);
+        }
+        .hero .divider-line {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 25px auto;
+            border-radius: 2px;
+            animation: fadeInUp 1s ease 0.3s both, pulse 2s infinite;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px var(--gold-glow); }
+            50% { box-shadow: 0 0 25px var(--gold-glow), 0 0 35px var(--gold-glow); }
+        }
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            z-index: 3;
+            animation: bounce 2.5s infinite;
+            color: var(--gold);
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            background: rgba(26,26,26,0.5);
+        }
+        .scroll-down:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-12px) scale(1.05); }
+            60% { transform: translateY(-6px) scale(1.02); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 100px 0; position: relative; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-dark));
+            margin: 12px auto 0;
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== TAB NAVIGATION ===== */
+        .nav-tabs-custom {
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .nav-tabs-custom .nav-link {
+            color: var(--text-secondary) !important;
+            border: none;
+            border-radius: 0;
+            padding: 12px 24px;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .nav-tabs-custom .nav-link:hover { color: var(--gold) !important; }
+        .nav-tabs-custom .nav-link.active {
+            color: var(--gold) !important;
+            background: transparent;
+            border: none;
+        }
+        .nav-tabs-custom .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+        }
+        .tab-content-custom {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 35px rgba(0,0,0,0.08);
+            border: 1px solid rgba(201,168,76,0.15);
+        }
+
+        /* ===== ABOUT ===== */
+        #about { background: #fff; }
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-secondary);
+        }
+        .about-text p { margin-bottom: 22px; }
+        .about-text strong { color: var(--dark); font-weight: 600; }
+
+        .highlight-box {
+            background: linear-gradient(135deg, var(--olive), #5a7045);
+            color: #fff;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 15px 50px rgba(74, 92, 58, 0.4);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .highlight-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        .highlight-box p {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            opacity: 0.98;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gallery-img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            transition: all 0.4s ease;
+            margin-bottom: 15px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        .gallery-img::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 19px;
+            padding: 3px;
+            background: linear-gradient(45deg, var(--gold-dark), var(--gold), var(--gold-dark));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .gallery-img:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .gallery-img:hover::before { opacity: 1; }
+        .img-caption {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin: 8px 0 25px;
+            font-style: italic;
+            padding: 0 10px;
+        }
+        .img-source {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: -15px;
+            margin-bottom: 25px;
+        }
+        .img-source a {
+            color: var(--gold-dark);
+            text-decoration: none;
+        }
+        .img-source a:hover { text-decoration: underline; }
+
+        /* ===== STATS ===== */
+        .stats-section {
+            background: linear-gradient(135deg, var(--dark), var(--dark-secondary));
+            color: #fff;
+            padding: 90px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 80%, var(--gold-glow) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139,26,26,0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 35px 20px;
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            border-radius: 16px;
+            transition: all 0.4s ease;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(201,168,76,0.1), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .stat-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(201, 168, 76, 0.25);
+            background: rgba(255,255,255,0.08);
+        }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 3.8rem);
+            font-weight: 900;
+            color: var(--gold);
+            display: block;
+            text-shadow: 0 0 20px var(--gold-glow);
+            position: relative;
+            z-index: 1;
+        }
+        .stat-label {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.85);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== TIMELINE ===== */
+        #timeline { background: var(--cream); }
+        .timeline-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--gold-dark), var(--gold), var(--gold-dark));
+            border-radius: 2px;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+        .timeline-item {
+            padding: 25px 0;
+            position: relative;
+            width: 50%;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 55px;
+            text-align: right;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 55px;
+        }
+        .timeline-item::before {
+            content: '★';
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            background: var(--gold);
+            color: var(--dark);
+            border: 4px solid var(--dark);
+            border-radius: 50%;
+            top: 32px;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 4px rgba(201,168,76,0.3), 0 0 20px var(--gold-glow);
+            transition: transform 0.3s;
+        }
+        .timeline-item:hover::before { transform: scale(1.2); }
+        .timeline-item:nth-child(odd)::before { right: -18px; }
+        .timeline-item:nth-child(even)::before { left: -18px; }
+        .timeline-content {
+            background: #fff;
+            padding: 28px 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 35px rgba(0,0,0,0.12);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(201,168,76,0.15);
+            position: relative;
+        }
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border-radius: 16px 16px 0 0;
+        }
+        .timeline-content:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.18);
+            border-color: var(--gold);
+        }
+        .timeline-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--red);
+            margin-bottom: 10px;
+            display: block;
+        }
+        .timeline-content h4 {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .timeline-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.75;
+            margin: 0;
+        }
+
+        /* ===== MAP SECTION ===== */
+        #map-section {
+            background: linear-gradient(135deg, var(--dark), var(--dark-secondary));
+            color: #fff;
+            text-align: center;
+        }
+        #map-section .section-title { color: #fff; }
+        #map-section .section-subtitle { color: rgba(255,255,255,0.8); }
+
+        .map-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 60px rgba(0,0,0,0.6);
+            border: 4px solid var(--gold);
+            position: relative;
+            background: #1a1a1a;
+        }
+        .map-container::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 24px;
+            padding: 4px;
+            background: linear-gradient(45deg, var(--gold-dark), var(--gold), var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderGlow 3s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes borderGlow {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        #interactive-map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+        }
+        .map-legend {
+            background: rgba(26,26,26,0.9);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--gold);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 2px solid #fff;
+        }
+        .legend-soviet { background: #c41e3a; }
+        .legend-german { background: #556b2f; }
+        .legend-liberated { background: #228b22; }
+
+        /* ===== VIDEO SECTION ===== */
+        #video-section {
+            background: linear-gradient(135deg, var(--cream), #e8e4d5);
+            padding: 80px 0;
+        }
+        .video-container {
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 60px rgba(0,0,0,0.25);
+            border: 4px solid var(--gold);
+            background: #000;
+            position: relative;
+        }
+        .video-container::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 24px;
+            padding: 4px;
+            background: linear-gradient(45deg, var(--gold-dark), var(--gold), var(--gold-light));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .video-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--gold-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .video-link:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        /* ===== COMMANDERS ===== */
+        #commanders { background: #fff; }
+        .commander-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            transition: all 0.4s ease;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        .commander-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 22px;
+            padding: 2px;
+            background: linear-gradient(45deg, transparent, var(--gold), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .commander-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+        }
+        .commander-card:hover::before { opacity: 1; }
+        .commander-photo {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            object-position: center top;
+            border-bottom: 4px solid var(--gold);
+            display: block;
+            transition: transform 0.4s;
+        }
+        .commander-card:hover .commander-photo { transform: scale(1.03); }
+        .commander-card .card-header-custom {
+            background: linear-gradient(135deg, var(--dark), #2a2a2a);
+            color: var(--gold);
+            padding: 22px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(201,168,76,0.2);
+        }
+        .commander-rank {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        .commander-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: #fff;
+        }
+        .commander-card .card-body {
+            padding: 28px 25px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+        .commander-card .card-body p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* ===== RESULTS ===== */
+        #results { background: linear-gradient(135deg, var(--cream), #e8e4d5); }
+        .result-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding: 15px 0;
+            border-bottom: 1px dashed rgba(201,168,76,0.3);
+        }
+        .result-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .result-icon {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--olive), #5a7045);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-right: 22px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 5px 20px rgba(74,92,58,0.3);
+            flex-shrink: 0;
+        }
+        .result-item h5 {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+            font-size: 1.2rem;
+        }
+        .result-item p {
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* ===== QUOTE ===== */
+        .quote-section {
+            background: linear-gradient(135deg, var(--red), #6B1010, #4a0a0a);
+            color: #fff;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .quote-section::before {
+            content: '"';
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-size: 20rem;
+            opacity: 0.06;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--gold);
+            pointer-events: none;
+            line-height: 1;
+        }
+        .quote-section blockquote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            font-style: italic;
+            max-width: 850px;
+            margin: 0 auto;
+            line-height: 1.65;
+            position: relative;
+            z-index: 2;
+            padding: 0 20px;
+        }
+        .quote-section cite {
+            display: block;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-style: normal;
+            font-weight: 500;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+        .quote-section cite::before { content: '— '; opacity: 0.7; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            padding: 50px 0 30px;
+            border-top: 3px solid var(--gold);
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+        }
+        footer .brand-footer {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        footer p { margin: 8px 0; font-size: 0.95rem; }
+        footer .small { font-size: 0.85rem !important; opacity: 0.6; }
+        .credits {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(201,168,76,0.3);
+        }
+        .credits p {
+            margin: 5px 0;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ===== ANIMATIONS ON SCROLL ===== */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s ease;
+        }
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== SOURCES LIST STYLING ===== */
+        #sources ul li {
+            margin-bottom: 18px;
+            padding-left: 5px;
+        }
+        #sources ul li a {
+            color: #2c5f8d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        #sources ul li a:hover {
+            color: var(--gold-dark);
+            text-decoration: underline;
+        }
+        #sources small.text-muted {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.9rem;
+            color: var(--text-secondary) !important;
+        }
+        .alert-info {
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 0.95rem;
+            background: rgba(44,95,141,0.1);
+            border-left: 4px solid #2c5f8d;
+            margin-top: 20px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 991px) {
+            .timeline-container::before { left: 30px; }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px !important;
+                padding-right: 0 !important;
+                text-align: left !important;
+            }
+            .timeline-item:nth-child(even) { left: 0; }
+            .timeline-item::before { left: 12px !important; right: auto !important; }
+            #interactive-map { height: 400px; }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 70px 0; }
+            .hero h1 { letter-spacing: 1px; }
+            .hero .subtitle { letter-spacing: 4px; }
+            .section-title { font-size: 2.2rem; }
+            .stat-number { font-size: 2.8rem; }
+            .quote-section blockquote { font-size: 1.5rem; }
+            .commander-photo { height: 350px; }
+            .commander-name { font-size: 1.35rem; }
+            .result-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                margin-right: 18px;
+            }
+            .highlight-box { padding: 28px; }
+            .nav-tabs-custom .nav-link { padding: 10px 16px; font-size: 0.9rem; }
+            #interactive-map { height: 350px; }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand { font-size: 1.4rem; }
+            .nav-link { font-size: 0.9rem; margin: 0 3px; }
+            .hero { min-height: 90vh; padding-top: 70px; }
+            .scroll-down {
+                width: 45px;
+                height: 45px;
+                font-size: 1.6rem;
+                bottom: 20px;
+            }
+            .stat-card { padding: 28px 15px; }
+            .stat-number { font-size: 2.3rem; }
+            .timeline-content { padding: 22px 25px; }
+            .result-item {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            .result-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            .tab-content-custom { padding: 20px; }
+            #interactive-map { height: 300px; }
+            .commander-photo { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Перейти к основному содержанию</a>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Главная навигация">
+        <div class="container">
+            <a class="navbar-brand" href="#" aria-label="На главную">★ БАГРАТИОН</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#about" aria-current="page">Об операции</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Фотоархив</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#map-section">Карта</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#timeline">Хронология</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#video-section">Видео</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#commanders">Командование</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#results">Итоги</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" role="banner">
+        <div class="hero-content">
+            <h1>Операция «Багратион»</h1>
+            <div class="divider-line"></div>
+            <p class="subtitle">Белорусская стратегическая операция</p>
+            <p class="dates">23 июня — 29 августа 1944</p>
+        </div>
+        <a href="#about" class="scroll-down" aria-label="Прокрутить вниз">▼</a>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content">
+        <!-- ABOUT SECTION WITH TABS -->
+        <section id="about" aria-labelledby="about-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="about-title" class="section-title">Об операции</h2>
+                    <p class="section-subtitle">Крупнейшее наступление Красной Армии летом 1944 года</p>
+                </div>
+
+                <!-- TAB NAVIGATION -->
+                <ul class="nav nav-tabs nav-tabs-custom" id="contentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="true">История</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="sources-tab" data-bs-toggle="tab" data-bs-target="#sources" type="button" role="tab" aria-controls="sources" aria-selected="false">Источники</button>
+                    </li>
+                </ul>
+
+                <!-- TAB CONTENT -->
+                <div class="tab-content tab-content-custom" id="contentTabsContent">
+                    <!-- History Tab -->
+                    <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        <div class="row align-items-center g-5">
+                            <div class="col-lg-7">
+                                <div class="about-text">
+                                    <p>
+                                        <strong>Белорусская стратегическая операция «Багратион»</strong> — одна из крупнейших
+                                        наступательных операций Великой Отечественной войны, проведённая Красной Армией
+                                        с 23 июня по 29 августа 1944 года. Операция получила название в честь русского
+                                        полководца эпохи Отечественной войны 1812 года — <strong>генерала Петра Ивановича Багратиона</strong>.
+                                    </p>
+                                    <p>
+                                        В ходе операции была полностью освобождена Белорусская ССР, часть Литовской ССР
+                                        и восточные районы Польши. Группа армий «Центр» вермахта была практически полностью
+                                        разгромлена. Советские войска продвинулись на 500–600 км по фронту протяжённостью
+                                        более 1000 км.
+                                    </p>
+                                    <p>
+                                        Операция «Багратион» по своим масштабам и результатам превзошла Нормандскую
+                                        операцию союзников. Она стала одной из главных причин, ускоривших окончание
+                                        Второй мировой войны в Европе.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <img src="https://www.pravmir.ru/wp-content/uploads/2012/12/1ed6ffe5926c.jpg"
+                                     alt="Советские солдаты на танке Т-34 в ходе операции Багратион"
+                                     class="gallery-img animate-on-scroll"
+                                     loading="lazy">
+                                <p class="img-caption">Советские войска в ходе наступления, лето 1944 года</p>
+                                <p class="img-source">Источник: <a href="https://www.pravmir.ru/belorusskaya-operaciya/" target="_blank" rel="noopener">Правмир.ru</a></p>
+                                <div class="highlight-box mt-4 animate-on-scroll">
+                                    <h3>⚔ Масштаб операции</h3>
+                                    <p>
+                                        В операции участвовали 4 фронта: <strong>1-й Прибалтийский</strong>,
+                                        <strong>3-й Белорусский</strong>, <strong>2-й Белорусский</strong> и
+                                        <strong>1-й Белорусский</strong>. Общая численность советских войск
+                                        превышала <strong>2,3 миллиона человек</strong>, при поддержке более
+                                        <strong>5,4 тысяч танков</strong> и самоходных артиллерийских установок, а также около
+                                        <strong>5,3 тысяч боевых самолётов</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sources Tab -->
+                    <div class="tab-pane fade" id="sources" role="tabpanel" aria-labelledby="sources-tab">
+                        <div class="about-text">
+                            <p><strong>Основные источники информации:</strong></p>
+                            <ul class="mb-4">
+                                <li>Центральный архив Министерства обороны РФ (ЦАМО)</li>
+                                <li>Российский государственный архив социально-политической истории (РГАСПИ)</li>
+                                <li>Военно-исторический журнал «Военно-исторический архив»</li>
+                                <li>Мемуары военачальников: Г.К. Жукова, А.М. Василевского, К.К. Рокоссовского</li>
+                                <li>Документы проекта «Память народа» (pamyat-naroda.ru)</li>
+                            </ul>
+
+                            <p><strong>Дополнительные источники и литература:</strong></p>
+                            <ul class="mb-4">
+                                <li>
+                                    <a href="https://ru.wikipedia.org/wiki/Баграмян,_Иван_Христофорович" target="_blank" rel="noopener">
+                                        Баграмян Иван Христофорович — статья в Википедии
+                                    </a><br>
+                                    <small class="text-muted">Биография командующего 1-м Прибалтийским фронтом</small>
+                                </li>
+                                <li>
+                                    <a href="https://www.monetnik.ru/obuchenie/istoriya-rossii/marshal-vasilevskij/" target="_blank" rel="noopener">
+                                        Маршал Василевский — образовательный проект
+                                    </a><br>
+                                    <small class="text-muted">Роль А.М. Василевского в планировании операции</small>
+                                </li>
+                                <li>
+                                    <a href="https://vlib.by/images/Suvorov-Bagration/operatsiya-bagration.html" target="_blank" rel="noopener">
+                                        Виртуальная библиотека Беларуси: Операция «Багратион»
+                                    </a><br>
+                                    <small class="text-muted">Документы и карты освобождения Беларуси</small>
+                                </li>
+                            </ul>
+
+                            <div class="alert-info" role="alert">
+                                <strong>Примечание:</strong> Все внешние ссылки открываются в новой вкладке.
+                                Администрация проекта не несёт ответственности за содержание сторонних ресурсов.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY -->
+        <section id="gallery" style="background: var(--cream);" aria-labelledby="gallery-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="gallery-title" class="section-title">Фотографии операции</h2>
+                    <p class="section-subtitle">Документальные кадры тех дней из архивов</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-10 mx-auto">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Белорусская_операция_1944_год.jpg/960px-Белорусская_операция_1944_год.jpg"
+                             alt="Карта наступления советских войск в операции Багратион"
+                             class="gallery-img animate-on-scroll"
+                             loading="lazy">
+                        <p class="img-caption">Карта Белорусской операции 1944 года</p>
+                        <p class="img-source">
+                            Источник: Wikimedia Commons / Public Domain
+                        </p>
+                    </div>
+                    <div class="col-md-10 mx-auto mt-4">
+                        <img src="https://vlib.by/images/Suvorov-Bagration/assets/images/bagration-info-1280x721.jpg"
+                             alt="Советские силы в операции Багратион"
+                             class="gallery-img animate-on-scroll"
+                             loading="lazy">
+                        <p class="img-caption">Расстановка советских сил в операции «Багратион»</p>
+                        <p class="img-source">
+                            Источник: <a href="https://vlib.by/images/Suvorov-Bagration/operatsiya-bagration.html" target="_blank" rel="noopener">Виртуальная библиотека Беларуси</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-section" aria-labelledby="stats-title">
+            <div class="container">
+                <h2 id="stats-title" class="visually-hidden">Статистика операции</h2>
+                <div class="row g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card animate-on-scroll">
+                            <span class="stat-number">2,3+ млн</span>
+                            <span class="stat-label">Личный состав</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card animate-on-scroll">
+                            <span class="stat-number">5,4+ тыс</span>
+                            <span class="stat-label">Танков и САУ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card animate-on-scroll">
+                            <span class="stat-number">5,3 тыс</span>
+                            <span class="stat-label">Самолётов</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card animate-on-scroll">
+                            <span class="stat-number">600 км</span>
+                            <span class="stat-label">Продвижение</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE MAP -->
+        <section id="map-section" aria-labelledby="map-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="map-title" class="section-title">Интерактивная карта</h2>
+                    <p class="section-subtitle">Ход наступления советских войск в операции «Багратион»</p>
+                </div>
+                <div class="map-container">
+                    <div id="interactive-map" role="region" aria-label="Интерактивная карта операции Багратион"></div>
+                </div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-soviet"></div>
+                        <span>Направления ударов советских фронтов</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-german"></div>
+                        <span>Позиции группы армий «Центр»</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-liberated"></div>
+                        <span>Территории, освобождённые к августу 1944</span>
+                    </div>
+                </div>
+                <p class="img-source mt-3">
+                    Карта создана на основе данных Генерального штаба РККА
+                </p>
+            </div>
+        </section>
+
+            <!-- VIDEO SECTION -->
+        <section id="video-section" aria-labelledby="video-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="video-title" class="section-title">Документальный фильм</h2>
+                    <p class="section-subtitle">Видеорассказ об операции «Багратион»</p>
+                </div>
+                <div class="video-container">
+                    <div class="video-placeholder" style="
+                        width: 100%;
+                        height: 300px;
+                        background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        color: #fff;
+                        text-align: center;
+                        padding: 20px;
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.7;">🎬</div>
+                        <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 10px; color: var(--gold);">
+                            К сожалению, видео не загрузилось :(
+                        </h4>
+                        <p style="opacity: 0.85; font-size: 1rem; max-width: 80%; margin-bottom: 20px;">
+                            Пожалуйста, просмотрите документальный фильм об операции «Багратион» по ссылке ниже
+                        </p>
+                        <a href="https://yandex.ru/video/preview/7551453745125519242"
+                           target="_blank"
+                           rel="noopener"
+                           class="btn"
+                           style="
+                               background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+                               color: var(--dark);
+                               font-weight: 600;
+                               padding: 12px 30px;
+                               border-radius: 30px;
+                               text-decoration: none;
+                               border: 2px solid var(--gold);
+                               transition: all 0.3s;
+                               box-shadow: 0 4px 15px var(--gold-glow);
+                           "
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px var(--gold-glow)'"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px var(--gold-glow)'">
+                            ▶ Смотреть видео на Яндекс.Видео
+                        </a>
+                    </div>
+                </div>
+                <p class="text-center mt-3 text-muted" style="font-size: 0.9rem;">
+                    🎥 Источник: Яндекс.Видео · Документальный проект «Великая Война»
+                </p>
+            </div>
+        </section>
+
+        <!-- TIMELINE -->
+        <section id="timeline" aria-labelledby="timeline-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="timeline-title" class="section-title">Хронология операции</h2>
+                    <p class="section-subtitle">Ключевые этапы наступления по датам</p>
+                </div>
+                <div class="timeline-container">
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">23–24 июня 1944</span>
+                            <h4>Начало операции</h4>
+                            <p>Мощная артиллерийская подготовка и авиационная бомбардировка. Войска 1-го Прибалтийского и 3-го Белорусского фронтов переходят в наступление, прорывая оборону противника.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">27 июня 1944</span>
+                            <h4>Окружение Витебска</h4>
+                            <p>Витебская группировка противника (около 30 000 человек) окружена и разгромлена. Витебск освобождён. 53-й корпус вермахта полностью уничтожен.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">28 июня 1944</span>
+                            <h4>Окружение Бобруйска</h4>
+                            <p>Войска 1-го Белорусского фронта замыкают кольцо вокруг Бобруйской группировки. В «котле» оказываются около 40 000 солдат и офицеров вермахта.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">3 июля 1944</span>
+                            <h4>Освобождение Минска</h4>
+                            <p>К 3 июля Минск полностью освобождён. Восточнее города в окружении оказывается группировка более 100 000 человек. Крупнейший «котёл» операции.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">13 июля – 29 августа</span>
+                            <h4>Люблин-Брестская и Вильнюсская операции</h4>
+                            <p>Советские войска продолжают стремительное продвижение. Освобождены Вильнюс, Гродно, Белосток, Брест. Форсирована река Висла.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-content">
+                            <span class="timeline-date">29 августа 1944</span>
+                            <h4>Завершение операции</h4>
+                            <p>Операция «Багратион» завершена. Белоруссия полностью освобождена. Красная Армия вышла к границам Восточной Пруссии и Варшавы.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMANDERS -->
+        <section id="commanders" aria-labelledby="commanders-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="commanders-title" class="section-title">Командование</h2>
+                    <p class="section-subtitle">Маршалы и генералы, руководившие операцией</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/5105005/1222898473/SUx182"
+                                 alt="Маршал Советского Союза Георгий Константинович Жуков"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Маршал Советского Союза</div>
+                                <div class="commander-name">Г. К. Жуков</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Заместитель Верховного Главнокомандующего. Координировал действия 1-го и 2-го Белорусских фронтов. Один из главных архитекторов плана операции.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/2431491/1157136511/SUx182_2x"
+                                 alt="Маршал Советского Союза Александр Михайлович Василевский"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Маршал Советского Союза</div>
+                                <div class="commander-name">А. М. Василевский</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Начальник Генерального штаба. Координировал действия 1-го Прибалтийского и 3-го Белорусского фронтов. Разрабатывал стратегический план операции.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/2327175/1244269662/SUx182_2x"
+                                 alt="Генерал армии Константин Константинович Рокоссовский"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Генерал армии</div>
+                                <div class="commander-name">К. К. Рокоссовский</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Командующий 1-м Белорусским фронтом. Провёл блестящую операцию по окружению и разгрому Бобруйской группировки противника.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/1956054/1220053579/SUx182"
+                                 alt="Генерал армии Иван Данилович Черняховский"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Генерал армии</div>
+                                <div class="commander-name">И. Д. Черняховский</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Командующий 3-м Белорусским фронтом. Самый молодой командующий фронтом в Красной Армии. Освобождал Витебск и Вильнюс.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/5396253/1176400056/SUx182"
+                                 alt="Генерал армии Григорий Фёдорович Захаров"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Генерал армии</div>
+                                <div class="commander-name">Г. Ф. Захаров</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Командующий 2-м Белорусским фронтом. Обеспечивал наступление в центральном направлении, участвовал в освобождении Могилёва.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <article class="commander-card animate-on-scroll">
+                            <img src="https://avatars.mds.yandex.net/get-entity_search/5126074/1244924603/SUx182_2x"
+                                 alt="Генерал армии Иван Христофорович Баграмян"
+                                 class="commander-photo"
+                                 loading="lazy">
+                            <div class="card-header-custom">
+                                <div class="commander-rank">Генерал армии</div>
+                                <div class="commander-name">И. Х. Баграмян</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Командующий 1-м Прибалтийским фронтом. Участвовал в окружении Витебской группировки и освобождении Полоцка.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section id="results" aria-labelledby="results-title">
+            <div class="container">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6">
+                        <h2 id="results-title" class="section-title">Итоги и результаты</h2>
+                        <p class="section-subtitle">Победа, изменившая ход войны</p>
+
+                        <div class="result-item animate-on-scroll">
+                            <div class="result-icon" aria-hidden="true">🏴</div>
+                            <div>
+                                <h5>Полное освобождение Белоруссии</h5>
+                                <p>Белорусская ССР была полностью освобождена от немецко-фашистских захватчиков. 209 городов и посёлков вернулись под советский контроль.</p>
+                            </div>
+                        </div>
+
+                        <div class="result-item animate-on-scroll">
+                            <div class="result-icon" aria-hidden="true">💥</div>
+                            <div>
+                                <h5>Разгром группы армий «Центр»</h5>
+                                <p>Вермахт потерял около 500 000 человек убитыми, ранеными и пленными. 17 дивизий и 3 корпуса были полностью уничтожены.</p>
+                            </div>
+                        </div>
+
+                        <div class="result-item animate-on-scroll">
+                            <div class="result-icon" aria-hidden="true">🗺️</div>
+                            <div>
+                                <h5>Стратегическое продвижение</h5>
+                                <p>Советские войска продвинулись на 500–600 км, выйдя к границам Восточной Пруссии и к Висле. Были созданы условия для освобождения Польши.</p>
+                            </div>
+                        </div>
+
+                        <div class="result-item animate-on-scroll">
+                            <div class="result-icon" aria-hidden="true">🏆</div>
+                            <div>
+                                <h5>Историческое значение</h5>
+                                <p>Операция «Багратион» стала одной из крупнейших побед СССР в Великой Отечественной войне и существенно приблизила окончание войны в Европе.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="highlight-box animate-on-scroll">
+                            <h3>📊 Потери сторон</h3>
+                            <p><strong>Вермахт:</strong> до 500 000 человек (убитые, раненые, пленные), включая 17 полностью уничтоженных дивизий.</p>
+                            <p><strong>Красная Армия:</strong> 178 507 безвозвратных потерь, 587 308 санитарных потерь. Всего — около 765 000 человек.</p>
+                            <p class="mt-3" style="opacity:0.9; font-size:0.98rem;">
+                                Несмотря на тяжёлые потери, операция стала блестящим примером военного искусства и стратегического планирования.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUOTE -->
+        <section class="quote-section" aria-labelledby="quote-title">
+            <div class="container">
+                <h2 id="quote-title" class="visually-hidden">Историческая цитата</h2>
+                <blockquote>
+                    «Операция „Багратион" стала одним из крупнейших сражений в мировой истории.
+                    Она навсегда вписана золотыми буквами в летопись Великой Победы.»
+                </blockquote>
+                <cite>Из исторических источников</cite>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="container">
+            <p class="brand-footer">★ Операция «Багратион» 1944</p>
+            <p>
+                Образовательный исторический проект · Белорусская стратегическая операция
+            </p>
+            <p class="small mt-3">
+                Все материалы основаны на общедоступных исторических источниках и архивных данных
+            </p>
+            <div class="credits">
+                <p class="small">
+                    <strong>Создан:</strong> Таракановым Максимом
+                </p>
+                <p class="small">
+                    <strong>Задеплоено:</strong> Глебом Пахляевым
+                </p>
+            </div>
+            <p class="small mt-3 no-print">
+                © 2026 · Создано с уважением к истории
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scroll & navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        const headerOffset = 80;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                        const navCollapse = document.querySelector('.navbar-collapse');
+                        if (navCollapse.classList.contains('show')) {
+                            bootstrap.Collapse.getInstance(navCollapse)?.hide();
+                        }
+                        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // Navbar scroll effect
+            const navbar = document.querySelector('.navbar');
+            const handleScroll = () => {
+                if (window.scrollY > 50) navbar.classList.add('scrolled');
+                else navbar.classList.remove('scrolled');
+            };
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            handleScroll();
+
+            // Animate on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+            // Stats animation
+            const animateValue = (el, start, end, duration, suffix = '') => {
+                let startTs = null;
+                const step = (ts) => {
+                    if (!startTs) startTs = ts;
+                    const progress = Math.min((ts - startTs) / duration, 1);
+                    const val = Math.floor(progress * (end - start) + start);
+                    el.textContent = val.toLocaleString('ru-RU') + suffix;
+                    if (progress < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
+            };
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.querySelectorAll('.stat-number').forEach(stat => {
+                            const text = stat.textContent;
+                            const match = text.match(/([\d.,]+)/);
+                            if (match) {
+                                const num = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'));
+                                const suffix = text.replace(/[\d.,\s]+/g, '').trim() || '';
+                                animateValue(stat, 0, num, 2000, suffix);
+                            }
+                        });
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            const statsSection = document.querySelector('.stats-section');
+            if (statsSection) statsObserver.observe(statsSection);
+
+            // Interactive Map (Leaflet)
+            if (typeof L !== 'undefined') {
+                const map = L.map('interactive-map').setView([53.7, 27.5], 6);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 10,
+                    minZoom: 5
+                }).addTo(map);
+
+                const cities = [
+                    { name: 'Витебск', coords: [55.19, 30.21], date: '26.06.1944' },
+                    { name: 'Бобруйск', coords: [53.14, 29.22], date: '29.06.1944' },
+                    { name: 'Минск', coords: [53.9, 27.56], date: '03.07.1944' },
+                    { name: 'Вильнюс', coords: [54.69, 25.28], date: '13.07.1944' },
+                    { name: 'Брест', coords: [52.09, 23.69], date: '28.07.1944' }
+                ];
+                cities.forEach(city => {
+                    L.marker(city.coords).addTo(map).bindPopup(`<strong>${city.name}</strong><br>Освобождён: ${city.date}`);
+                });
+                L.polyline([[55.5,28],[54.5,27.5],[53.9,27.56],[53,26],[52.5,25]], {color:'#c41e3a',weight:3,opacity:0.8}).addTo(map)
+                    .bindPopup('Основное направление наступления 1-го Белорусского фронта');
+            }
+
+            // Active nav link on scroll
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    if (pageYOffset >= section.offsetTop - 100) current = section.getAttribute('id');
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
